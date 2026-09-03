@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-MZ">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="robots" content="noindex,nofollow">
+  <title>{% block title %}Painel Administrativo | IN Motors{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%23e22e3a'/%3E%3Ctext%20x='32'%20y='45'%20font-family='Arial,Helvetica,sans-serif'%20font-size='30'%20font-weight='bold'%20fill='white'%20text-anchor='middle'%3EIN%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="admin-body{% if not current_user.is_authenticated %} admin-guest{% endif %}">
+  {% if current_user.is_authenticated %}
+  <header class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <a class="admin-logo" href="{{ url_for('admin.dashboard') }}"><span>IN</span> Motors <small>Painel Administrativo</small></a>
+      <div class="admin-topbar-actions">
+        <a class="admin-link" href="{{ url_for('public.index') }}" target="_blank" rel="noopener">Ver site ↗</a>
+        <a class="admin-btn admin-btn-outline" href="{{ url_for('admin.logout') }}">Sair</a>
+      </div>
+    </div>
+  </header>
+  {% endif %}
+
+  <main class="admin-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="admin-container">
+        {% for category, message in messages %}
+        <p class="flash flash-{{ category }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

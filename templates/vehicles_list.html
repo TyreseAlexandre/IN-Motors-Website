@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}Viaturas disponíveis | IN Motors{% endblock %}
+{% block description %}Consulte as viaturas disponíveis, reservadas e vendidas pela IN Motors em Moçambique.{% endblock %}
+{% block content %}
+<section class="section" style="padding-top:150px">
+  <div class="container">
+    <div class="inventory-head reveal">
+      <div><div class="eyebrow">Viaturas</div><h2>O nosso inventário.</h2></div>
+      <p class="muted">Filtre por marca, ano, preço ou estado para encontrar a viatura certa.</p>
+    </div>
+
+    <form class="filters-bar reveal" method="get">
+      <div class="filters-grid">
+        <div class="field">
+          <label for="q">Pesquisar</label>
+          <input id="q" name="q" placeholder="Marca ou modelo" value="{{ filters.q }}">
+        </div>
+        <div class="field">
+          <label for="marca">Marca</label>
+          <select id="marca" name="marca">
+            <option value="">Todas</option>
+            {% for b in brands %}
+            <option value="{{ b }}" {% if filters.marca == b %}selected{% endif %}>{{ b }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="estado">Estado</label>
+          <select id="estado" name="estado">
+            <option value="">Todos</option>
+            <option value="disponivel" {% if filters.estado == 'disponivel' %}selected{% endif %}>Disponível</option>
+            <option value="reservado" {% if filters.estado == 'reservado' %}selected{% endif %}>Reservado</option>
+            <option value="vendido" {% if filters.estado == 'vendido' %}selected{% endif %}>Vendido</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ano">Ano</label>
+          <input id="ano" name="ano" type="number" placeholder="Ex.: 2020" value="{{ filters.ano }}">
+        </div>
+        <button class="btn btn-red" type="submit">Filtrar</button>
+      </div>
+    </form>
+
+    <p class="results-count reveal">{{ vehicles|length }} viatura{{ 's' if vehicles|length != 1 }} encontrada{{ 's' if vehicles|length != 1 }}.</p>
+
+    {% if vehicles %}
+    <div class="listing-grid reveal">
+      {% for vehicle in vehicles %}
+        {{ macros.vehicle_card(vehicle) }}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state reveal">
+      <h3>Nenhuma viatura encontrada</h3>
+      <p>Tente ajustar os filtros ou fale connosco pelo WhatsApp para pedir uma viatura específica.</p>
+      <a class="btn btn-wa" style="margin-top:24px" href="https://wa.me/{{ whatsapp_number }}?text=Ol%C3%A1%2C%20IN%20Motors.%20Gostaria%20de%20saber%20mais%20sobre%20viaturas%20dispon%C3%ADveis." target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

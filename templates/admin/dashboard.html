@@ -1,0 +1,98 @@
+{% extends "admin/base.html" %}
+{% block title %}Painel Administrativo | IN Motors{% endblock %}
+{% block content %}
+<div class="admin-container">
+  <div class="eyebrow-admin">Painel Administrativo</div>
+  <h1 style="font-size:1.8rem;margin-bottom:26px">Bem-vindo de volta.</h1>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">{{ counts.total }}</div><div class="label">Total de Viaturas</div></div>
+    <div class="stat-card green"><div class="num">{{ counts.disponivel }}</div><div class="label">Disponíveis</div></div>
+    <div class="stat-card amber"><div class="num">{{ counts.reservado }}</div><div class="label">Reservadas</div></div>
+    <div class="stat-card accent"><div class="num">{{ counts.vendido }}</div><div class="label">Vendidas</div></div>
+  </div>
+
+  <div class="section-head">
+    <h2>Viaturas</h2>
+    <a class="admin-btn admin-btn-red" href="{{ url_for('admin.vehicle_add') }}">+ Adicionar Viatura</a>
+  </div>
+
+  {% if vehicles %}
+  <table class="vehicle-table">
+    <thead>
+      <tr>
+        <th>Foto</th><th>Viatura</th><th>Ano</th><th>Preço</th><th>Estado</th><th>Destaque</th><th>Visível</th><th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vehicle in vehicles %}
+      <tr>
+        <td class="v-photo-cell" data-label="Foto">
+          {% set image = vehicle.primary_image %}
+          {% if image %}
+          <img class="v-thumb" src="{{ image.image_url }}" alt="{{ vehicle.title }}">
+          {% else %}
+          <div class="v-thumb empty">Sem foto</div>
+          {% endif %}
+        </td>
+        <td data-label="Viatura"><div><div class="v-title">{{ vehicle.brand }} {{ vehicle.model }}</div><div class="v-sub">{{ vehicle.price_formatted }}</div></div></td>
+        <td data-label="Ano">{{ vehicle.year }}</td>
+        <td data-label="Preço">{{ vehicle.price_formatted }}</td>
+        <td data-label="Estado">
+          <form class="status-select-form inline" method="post" action="{{ url_for('admin.vehicle_status', vehicle_id=vehicle.id) }}">
+            {{ action_form.hidden_tag() }}
+            <select name="status" onchange="this.form.submit()">
+              <option value="disponivel" {% if vehicle.status == 'disponivel' %}selected{% endif %}>Disponível</option>
+              <option value="reservado" {% if vehicle.status == 'reservado' %}selected{% endif %}>Reservado</option>
+              <option value="vendido" {% if vehicle.status == 'vendido' %}selected{% endif %}>Vendido</option>
+            </select>
+          </form>
+        </td>
+        <td data-label="Destaque">
+          <form class="inline" method="post" action="{{ url_for('admin.vehicle_toggle_featured', vehicle_id=vehicle.id) }}">
+            {{ action_form.hidden_tag() }}
+            <button type="submit" class="pill {{ 'pill-disponivel' if vehicle.is_featured else 'pill-muted' }}" style="border:0;cursor:pointer">{{ 'Destaque' if vehicle.is_featured else 'Normal' }}</button>
+          </form>
+        </td>
+        <td data-label="Visível">
+          <form class="inline" method="post" action="{{ url_for('admin.vehicle_toggle_visibility', vehicle_id=vehicle.id) }}">
+            {{ action_form.hidden_tag() }}
+            <button type="submit" class="pill {{ 'pill-disponivel' if vehicle.is_visible else 'pill-muted' }}" style="border:0;cursor:pointer">{{ 'Publicado' if vehicle.is_visible else 'Oculto' }}</button>
+          </form>
+        </td>
+        <td data-label="Ações">
+          <div class="action-group">
+            <a class="admin-btn admin-btn-outline-dark admin-btn-sm" href="{{ url_for('admin.vehicle_edit', vehicle_id=vehicle.id) }}">Editar</a>
+            <form class="inline js-confirm-delete" method="post" action="{{ url_for('admin.vehicle_delete', vehicle_id=vehicle.id) }}" data-confirm-title="Eliminar viatura" data-confirm-message="Tem certeza que deseja eliminar esta viatura? Esta ação não pode ser desfeita.">
+              {{ action_form.hidden_tag() }}
+              <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">Eliminar</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-vehicles">
+    <h3>Ainda não tem viaturas registadas.</h3>
+    <p>Adicione a primeira viatura para que apareça automaticamente no site.</p>
+    <a class="admin-btn admin-btn-red" style="margin-top:18px" href="{{ url_for('admin.vehicle_add') }}">+ Adicionar Viatura</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3 id="confirmTitle">Confirmar ação</h3>
+    <p id="confirmMessage">Tem a certeza?</p>
+    <div class="row">
+      <button type="button" class="admin-btn admin-btn-ghost" id="confirmCancel">Cancelar</button>
+      <button type="button" class="admin-btn admin-btn-red" id="confirmAccept">Eliminar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

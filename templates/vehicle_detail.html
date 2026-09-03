@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ vehicle.title }} | IN Motors{% endblock %}
+{% block description %}{{ vehicle.title }} — {{ vehicle.price_formatted }}. {{ (vehicle.description or 'Consulte detalhes e fale connosco pelo WhatsApp.')[:140] }}{% endblock %}
+{% block og_title %}{{ vehicle.title }} | IN Motors{% endblock %}
+{% block og_description %}{{ vehicle.price_formatted }} · {{ vehicle.status_label }}{% endblock %}
+{% block og_image %}{% if vehicle.primary_image %}{{ vehicle.primary_image.image_url }}{% else %}https://inmotors.mz.co/static/assets/honda-imported.jpeg{% endif %}{% endblock %}
+{% block content %}
+{% set wa_text = 'Ol%C3%A1%20IN%20Motors%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20' ~ (vehicle.title | urlencode) %}
+<section class="section detail-hero">
+  <div class="container">
+    <p class="eyebrow reveal"><a href="{{ url_for('public.vehicles_list') }}" style="color:#d9d9db">← Voltar às viaturas</a></p>
+
+    <div class="detail-gallery reveal" style="margin-top:20px">
+      <div class="detail-gallery-main">
+        {% if vehicle.images %}
+        <img id="mainImage" src="{{ vehicle.primary_image.image_url }}" alt="{{ vehicle.title }}">
+        {% else %}
+        <img id="mainImage" src="{{ url_for('static', filename='assets/honda-imported.jpeg') }}" alt="{{ vehicle.title }}">
+        {% endif %}
+      </div>
+      {% if vehicle.images|length > 1 %}
+      <div class="detail-thumbs">
+        {% for image in vehicle.images %}
+        <img src="{{ image.image_url }}" alt="{{ vehicle.title }} foto {{ loop.index }}" class="{{ 'active' if image.is_primary }}" onclick="document.getElementById('mainImage').src=this.src;document.querySelectorAll('.detail-thumbs img').forEach(t=>t.classList.remove('active'));this.classList.add('active')">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="detail-body">
+      <div class="reveal">
+        <span class="status status-{{ vehicle.status }}">{{ vehicle.status_label }}</span>
+        <h1 style="font-size:clamp(2rem,4vw,3.2rem);margin-top:16px">{{ vehicle.title }}</h1>
+
+        <div class="detail-specs">
+          <div><b>Ano</b>{{ vehicle.year }}</div>
+          <div><b>Quilometragem</b>{{ vehicle.mileage_formatted or 'A confirmar' }}</div>
+          <div><b>Transmissão</b>{{ vehicle.transmission or 'A confirmar' }}</div>
+          <div><b>Combustível</b>{{ vehicle.fuel_type or 'A confirmar' }}</div>
+          <div><b>Motor</b>{{ vehicle.engine or 'A confirmar' }}</div>
+          <div><b>Cor</b>{{ vehicle.color or 'A confirmar' }}</div>
+          <div><b>Localização</b>{{ vehicle.location or 'Maputo, Moçambique' }}</div>
+        </div>
+
+        {% if vehicle.description %}
+        <p class="muted" style="font-size:1.05rem;line-height:1.7">{{ vehicle.description }}</p>
+        {% endif %}
+      </div>
+
+      <aside class="detail-price-box reveal">
+        <div class="price">{{ vehicle.price_formatted }}</div>
+        <p class="muted">{{ vehicle.status_label }}</p>
+        <a class="btn btn-wa" href="https://wa.me/{{ whatsapp_number }}?text={{ wa_text }}." target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <a class="btn btn-outline" href="{{ url_for('public.index') }}#cotacao" style="margin-top:10px">Pedir cotação</a>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

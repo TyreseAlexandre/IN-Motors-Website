@@ -1,0 +1,14 @@
+{% macro vehicle_card(vehicle, hero=False) %}
+{% set image = vehicle.primary_image %}
+<a class="vehicle-card{% if hero %} hero{% endif %}{% if not image %} no-image{% endif %}" href="{{ url_for('public.vehicle_detail', slug=vehicle.slug) }}" aria-label="Ver detalhes: {{ vehicle.title }}">
+  {% if image %}
+  <img src="{{ image.image_url }}" alt="{{ vehicle.title }}" loading="lazy" decoding="async">
+  {% endif %}
+  <div class="vehicle-info">
+    <span class="status status-{{ vehicle.status }}">{{ vehicle.status_label }}</span>
+    <h3>{{ vehicle.title }}</h3>
+    <small class="vehicle-meta">{% if vehicle.mileage_formatted %}{{ vehicle.mileage_formatted }} · {% endif %}{{ vehicle.transmission or 'Transmissão a confirmar' }}</small>
+    <div class="vehicle-price">{{ vehicle.price_formatted }}</div>
+  </div>
+</a>
+{% endmacro %}

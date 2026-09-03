@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Adicionar Viatura' if mode == 'add' else 'Editar Viatura' }} | Painel IN Motors{% endblock %}
+{% block content %}
+<div class="admin-container">
+  <div class="eyebrow-admin"><a href="{{ url_for('admin.dashboard') }}" style="color:inherit">← Painel</a></div>
+  <h1 style="font-size:1.7rem;margin-bottom:22px">{{ 'Adicionar Viatura' if mode == 'add' else 'Editar: ' ~ vehicle.title }}</h1>
+
+  <div class="form-card">
+    <form method="post" enctype="multipart/form-data" novalidate id="vehicleForm">
+      {{ form.hidden_tag() }}
+
+      <div class="form-section-title">Identificação</div>
+      <div class="form-grid">
+        <div class="field"><label for="brand">Marca *</label>{{ form.brand(id="brand", placeholder="Ex.: Toyota") }}{% for e in form.brand.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+        <div class="field"><label for="model">Modelo *</label>{{ form.model(id="model", placeholder="Ex.: Harrier") }}{% for e in form.model.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+        <div class="field"><label for="year">Ano *</label>{{ form.year(id="year", placeholder="Ex.: 2022") }}{% for e in form.year.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+        <div class="field"><label for="price">Preço (MZN) *</label>{{ form.price(id="price", placeholder="Ex.: 1250000") }}{% for e in form.price.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+      </div>
+
+      <div class="form-section-title">Especificações</div>
+      <div class="form-grid">
+        <div class="field"><label for="mileage">Quilometragem (km)</label>{{ form.mileage(id="mileage", placeholder="Ex.: 45000") }}{% for e in form.mileage.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+        <div class="field"><label for="transmission">Transmissão</label>{{ form.transmission(id="transmission") }}</div>
+        <div class="field"><label for="fuel_type">Combustível</label>{{ form.fuel_type(id="fuel_type") }}</div>
+        <div class="field"><label for="engine">Motor</label>{{ form.engine(id="engine", placeholder="Ex.: 2.0L Turbo") }}</div>
+        <div class="field"><label for="color">Cor</label>{{ form.color(id="color", placeholder="Ex.: Preto") }}</div>
+        <div class="field"><label for="location">Localização</label>{{ form.location(id="location", placeholder="Ex.: Maputo") }}</div>
+      </div>
+
+      <div class="form-section-title">Descrição</div>
+      <div class="field full">{{ form.description(id="description", rows=5, placeholder="Detalhes adicionais sobre a viatura...") }}</div>
+
+      <div class="form-section-title">Estado e visibilidade</div>
+      <div class="form-grid">
+        <div class="field"><label for="status">Estado *</label>
+          <select id="status" name="status">
+            <option value="disponivel" {% if form.status.data == 'disponivel' %}selected{% endif %}>Disponível</option>
+            <option value="reservado" {% if form.status.data == 'reservado' %}selected{% endif %}>Reservado</option>
+            <option value="vendido" {% if form.status.data == 'vendido' %}selected{% endif %}>Vendido</option>
+          </select>
+        </div>
+      </div>
+      <div class="checkbox-row">{{ form.is_featured(id="is_featured") }}<label for="is_featured">Destacar esta viatura na página inicial</label></div>
+      <div class="checkbox-row">{{ form.is_visible(id="is_visible") }}<label for="is_visible">Publicado (visível no site)</label></div>
+
+      {% if mode == 'edit' and vehicle.images %}
+      <div class="form-section-title">Fotos atuais</div>
+      <div class="existing-photos">
+        {% for image in vehicle.images %}
+        <div class="existing-photo">
+          {% if image.is_primary %}<span class="primary-badge">Capa</span>{% endif %}
+          <img src="{{ image.image_url }}" alt="Foto {{ loop.index }}">
+          <div class="photo-actions">
+            {% if not image.is_primary %}
+            <form class="inline" method="post" action="{{ url_for('admin.image_make_primary', vehicle_id=vehicle.id, image_id=image.id) }}">
+              {{ delete_image_form.hidden_tag() }}
+              <button type="submit" class="admin-btn admin-btn-ghost admin-btn-sm">Tornar capa</button>
+            </form>
+            {% endif %}
+            <form class="inline" method="post" action="{{ url_for('admin.image_delete', vehicle_id=vehicle.id, image_id=image.id) }}">
+              {{ delete_image_form.hidden_tag() }}
+              <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">Eliminar</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="form-section-title">{{ 'Adicionar fotos' if mode == 'edit' else 'Fotos' }}</div>
+      <div class="photo-input">
+        {{ form.photos(id="photos", multiple=true, accept="image/png,image/jpeg,image/webp", onchange="previewPhotos(this)") }}
+        <p style="color:var(--muted);font-size:.82rem;margin-top:8px">JPG, PNG ou WEBP · máx. 5MB por foto · a primeira foto enviada torna-se a capa se ainda não houver nenhuma</p>
+        {% for e in form.photos.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+        <div class="photo-preview-grid" id="photoPreview"></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="admin-btn admin-btn-red">{{ 'Publicar Viatura' if mode == 'add' else 'Guardar Alterações' }}</button>
+        <a class="admin-btn admin-btn-outline-dark" href="{{ url_for('admin.dashboard') }}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

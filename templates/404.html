@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Página não encontrada | IN Motors{% endblock %}
+{% block content %}
+<section class="not-found">
+  <div class="container">
+    <div class="eyebrow">Erro 404</div>
+    <h2 style="margin:18px 0">Esta página não foi encontrada.</h2>
+    <p class="muted" style="margin-bottom:28px">A viatura ou página que procura pode ter sido removida ou já não está disponível.</p>
+    <a class="btn btn-red" href="{{ url_for('public.index') }}">Voltar ao início</a>
+  </div>
+</section>
+{% endblock %}

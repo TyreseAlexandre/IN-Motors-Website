@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% block title %}Iniciar sessão | Painel IN Motors{% endblock %}
+{% block content %}
+<div class="login-card">
+  <div class="brand"><b>IN</b> Motors — Painel Administrativo</div>
+  <h1>Iniciar sessão</h1>
+  <p class="sub">Acesso reservado ao proprietário da IN Motors.</p>
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      <label for="email">Email</label>
+      {{ form.email(id="email", autocomplete="username", autofocus=true) }}
+      {% for error in form.email.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      <label for="password">Palavra-passe</label>
+      {{ form.password(id="password", autocomplete="current-password") }}
+      {% for error in form.password.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+    </div>
+    <button class="admin-btn admin-btn-red" type="submit">Entrar</button>
+  </form>
+</div>
+{% endblock %}
