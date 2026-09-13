@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS vehicle_images (
     INDEX idx_vehicle_images_vehicle (vehicle_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-ALTER USER 'inmotors_app'@'localhost'
-IDENTIFIED BY 'TyreseMassinga78m';
-
-FLUSH PRIVILEGES;
+-- Create/update the app's DB user and grant access. Run this manually in a
+-- terminal (never store a real password in a committed file):
+--   CREATE USER IF NOT EXISTS 'inmotors_app'@'localhost' IDENTIFIED BY 'your-password-here';
+--   GRANT ALL PRIVILEGES ON in_motors.* TO 'inmotors_app'@'localhost';
+--   FLUSH PRIVILEGES;
